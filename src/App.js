@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import 'fontsource-roboto'; // em vez de pegar a fonte do googlefonts, da para instalar a fonte com yarn add fontsourc-roboto
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import FormularioCadastro from "./components/FormularioCadastro/FormularioCadastro";
+
+import { Container, Typography } from '@material-ui/core';
+
+class App extends Component {
+  render() {
+    return (
+      // Container: seria como coloacr uma tag igual a article
+      <Container component="article" maxWidth="sm">
+        {/* Typography: seria como colocar um h1, h2..., vai depender o que for colocado na variante */}
+        {/* variante: o tamanho da escrita vai ser como se fosse um h3, mas o componente(a tag) é um h1 */}
+        <Typography variante="h3" component="h1" align="center">Formulário de cadastro</Typography>
+        <FormularioCadastro />
+      </Container>
+    );
+  }
 }
+
 
 export default App;
