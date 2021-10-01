@@ -1,118 +1,59 @@
-import React, { useState } from "react";
-import { Button, TextField, Switch, FormControlLabel } from "@material-ui/core"; // layout pré definidos(utilizados para designs e layouts de componentes como button)
+import React, { useEffect, useState } from "react";
+import { Typography, Stepper, Step, StepLabel } from "@material-ui/core";
+import DadosEntrega from "./DadosEntrega";
+import DadosPessoais from "./DadosPessoais";
+import DadosUsuarios from "./DadosUsuarios";
 
-// aoEnviar: é a função que está sendo passada dentro do FormularioCadastro como propriedade, no componente App.js
-// poderia colocar só props em vez de {aoEnviar}, só que qdo for usar lá em baixo deve colocar props.aoEnviar()
-function FormularioCadastro({ aoEnviar, validarCPF }) {
-  const [nome, setNome] = useState("");
-  const [sobrenome, setSobrenome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [promocoes, setPromocoes] = useState(true);
-  const [novidades, setNovidades] = useState(true);
+function FormularioCadastro({ aoEnviar }) {
+  const [etapaAtual, setEtapaAtual] = useState(0);
+  const [dadosColetados, setDadosColetados] = useState({});
 
-  // validar erros para aparecer nos campos, caso o usuário digitar algo errado
-  const [erros, setErros] = useState({cpf:{valido:true, texto:""}});
+  const formularios = [
+    <DadosUsuarios aoEnviar={coletarDados} />,
+    <DadosPessoais aoEnviar={coletarDados} />,
+    // {aoEnviar}: é a função que está no App.js(onSubmit), que serve para mostrar o dados cadastrados
+    <DadosEntrega aoEnviar={coletarDados} />,
+    <Typography variant='h5'>Obrigado pelo Cadastro!</Typography>,
+  ];
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    aoEnviar({nome, sobrenome, cpf, promocoes, novidades});
-    // console.log({nome, sobrenome, cpf, promocoes, novidades});
+  useEffect(() => {
+    if (etapaAtual === formularios.length - 1) {
+      aoEnviar(dadosColetados);
+    }
+  });
+
+  function coletarDados(dados) {
+    setDadosColetados({ ...dadosColetados, ...dados });
+    proximo();
   }
 
-  function validandoCPF() {
-    // ehValido: recebe o que está sendo retornado na função validarCPF(cpf) no App.js
-    const ehValido = validarCPF(cpf);
-    setErros({cpf:ehValido});
-    // ou assim
-    // setErros({cpf:{valido:ehValido.valido, texto:ehValido.texto}});
+  function proximo() {
+    // serve para passar pelo array. Conforme for passando, vai mudando de componente e pegando a posição do array seguinte
+    setEtapaAtual(etapaAtual + 1);
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      {/* TextField: seria como colocar um label e um input do tipo texto */}
-      <TextField
-        id='nome'
-        label='Nome'
-        variant='outlined'
-        margin='normal'
-        fullWidth
-        // validação para digitar somente 3 caracter
-        // onChange={(event) => {
-        //   let tmpNome = event.target.value;
-        //   if (tmpNome.length >= 3) {
-        //     tmpNome = tmpNome.substr(0, 3);
-        //   }
-        //   setNome(tmpNome);
-        // }}
-        onChange={(event) => {
-          setNome(event.target.value);
-        }}
-        value={nome}
-      />
-      <TextField
-        id='sobrenome'
-        label='Sobrenome'
-        variant='outlined'
-        margin='normal'
-        fullWidth
-        onChange={(event) => {
-          setSobrenome(event.target.value);
-        }}
-        value={sobrenome}
-      />
-      <TextField
-        id='cpf'
-        label='CPF'
-        variant='outlined'
-        margin='normal'
-        fullWidth
-        error={!erros.cpf.valido} // se estiver errado a cor do campo muda
-        helperText={erros.cpf.texto} // para aparecer o texto do erro
-        // onBlur: qdo o foco do campo deixa de ser usado. Ex: qdo eu clico no campo e depois clico em outro campo, ele deixa de ser usado
-        onBlur={validandoCPF} 
-        onChange={(event) => {
-          setCpf(event.target.value);
-        }}
-        value={cpf}
-      />
-
-      {/* Switch: seria como colocar um input do tipo checkbox */}
-      {/* FormControlLabel: serve para juntar o label com o Switch */}
-      {/* setPromocoes(event.target.checked): tem que ser checked em vez de value, pq é uma propriedade do material-ui */}
-      {/* checked: seria como o value */}
-      <FormControlLabel
-        label='Promoções'
-        control={
-          <Switch
-            name='promocoes'
-            // defaultChecked={promocoes}
-            color='primary'
-            onChange={(event) => {
-              setPromocoes(event.target.checked);
-            }}
-            checked={promocoes}
-          />
-        }
-      />
-      <FormControlLabel
-        label='Novidades'
-        control={
-          <Switch
-            name='novidades'
-            // defaultChecked={novidades}
-            color='primary'
-            onChange={(event) => {
-              setNovidades(event.target.checked);
-            }}
-            checked={novidades}
-          />
-        }
-      />
-
-      <Button type='submit' variant='contained' color='primary'>
-        Cadastrar
-      </Button>
-    </form>
+    <>
+      {/* Stepper: mostra quais são as estapas */}
+      {/* activeStep: mostra qual etapa está ativa */}
+      <Stepper activeStep={etapaAtual}>
+        {/* para cada componente(formula´rio, coloca um Step) */}
+        {/* Step: desenha um StepLabel */}
+        <Step>
+          <StepLabel>Login</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel>Pessoal</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel>Entrega</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel>Finalização</StepLabel>
+        </Step>
+      </Stepper>
+      {formularios[etapaAtual]}
+    </>
   );
 }
 
