@@ -29,7 +29,6 @@ class App extends Component {
         >
           <FormularioCadastro aoEnviar={onSubmit} />
         </ValidacoesCadastro.Provider>
-        <FormularioCadastro aoEnviar={onSubmit} />
       </Container>
     );
   }

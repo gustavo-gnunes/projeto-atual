@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { Button, TextField, Switch, FormControlLabel } from "@material-ui/core"; // layout pré definidos(utilizados para designs e layouts de componentes como button)
 
 import ValidacoesCadastro from '../../contexts/ValidacoesCadastro';
+import useErros from '../../hooks/useErros'; // é um hooks que eu criei
 
 // aoEnviar: é a função que está sendo passada dentro do FormularioCadastro como propriedade, no componente App.js
 // poderia colocar só props em vez de {aoEnviar}, só que qdo for usar lá em baixo deve colocar props.aoEnviar()
@@ -13,34 +14,16 @@ function DadosPessoais({ aoEnviar }) {
   const [novidades, setNovidades] = useState(true);
 
   const validacoes = useContext(ValidacoesCadastro);
+  const [ erros, validarCampos, possoEnviar ] = useErros(validacoes);
 
   // validar erros para aparecer nos campos, caso o usuário digitar algo errado
-  const [erros, setErros] = useState({ cpf: { valido: true, texto: "" }, nome: { valido: true, texto: "" } });
+  //const [erros, setErros] = useState({ cpf: { valido: true, texto: "" }, nome: { valido: true, texto: "" } });
 
   function handleSubmit(event) {
     event.preventDefault();
     if(possoEnviar()) {
       aoEnviar({ nome, sobrenome, cpf, promocoes, novidades });
     }
-  }
-
-  // só vai deixar passar para etapa seguinte se todos os campos da validação for valido
-  function possoEnviar() {
-    for(let campo in erros) {
-      if(!erros[campo].valido) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function validarCampos(event) {
-    const {name, value} = event.target;
-    const novoEstado = {...erros}
-    // novoEstado[name]: recebe o que está sendo retornado na função validacoes() no App.js. Onde esse validacoes[name]: o name neste caso vem como cpf
-    // [name]: é o nome do atributo que foi definido no TextField
-    novoEstado[name] = validacoes[name](value);
-    setErros(novoEstado); 
   }
 
   return (
